@@ -53,9 +53,20 @@ SmartFacilityMaintenance/
   wwwroot/       css, js, uploads
 ```
 
+## Module ownership
+
+| Member | Module | Your files |
+|--------|--------|-----------|
+| Ching Linn Kee | Maintenance Request Management | `Controllers/RequestController.cs`, `Views/Request/` |
+| Grace Go Ying Chee | Request Tracking & History | `Controllers/TrackingController.cs`, `Views/Tracking/` |
+| Nigel Ng Kai Shuen | Request Modification & Activity Logs | `Controllers/ModificationController.cs`, `Views/Modification/` |
+| Harenthran Chandrasegar | Reports & Analytics | `Controllers/ReportsController.cs`, `Views/Reports/` |
+| Looi Zi Jian | Base project, authentication, database | already done |
+
 ## Team workflow
 
-- Work on a feature branch, e.g. `feature/request-management`.
-- Build inside your own module's controller and `Views/<Module>` folder.
-- Open a pull request into `dev`; merge to `main` for releases.
-- Coordinate database and model changes so migrations don't conflict.
+1. Pull the latest `dev`, then create your own branch: `feature/<your-module>`.
+2. Build only inside your own controller and `Views/<Module>` folder.
+3. Commit and push your branch, then open a pull request into `dev` (not `main`).
+4. Tell the team before changing the database or models, so EF migrations don't conflict.
+5. `main` is the stable branch — we merge `dev` into it for releases and the final submission.
