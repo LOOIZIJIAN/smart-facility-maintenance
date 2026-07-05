@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="hero rounded-4 p-5 mb-5 text-center">
+    <h1 class="display-5 fw-bold">Smart Facility Maintenance Management</h1>
+    <p class="lead col-lg-8 mx-auto mt-3">
+        Report campus facility issues, track their progress, and manage maintenance
+        efficiently — all on one centralised web platform for students, staff, and administrators.
+    </p>
+    <div class="mt-4">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4 me-2">Get started</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary btn-lg px-4">Register</a>
+    </div>
+</div>
+
+<h2 class="h4 text-center mb-4">What the system does</h2>
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-clipboard-plus"></i></div>
+                <h3 class="h6 mt-3">Submit &amp; Manage Requests</h3>
+                <p class="text-muted small mb-0">Report issues with photos, then assign, update, and close them.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-clock-history"></i></div>
+                <h3 class="h6 mt-3">Track &amp; History</h3>
+                <p class="text-muted small mb-0">Follow each request from submission to completion with full history.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-pencil-square"></i></div>
+                <h3 class="h6 mt-3">Modify &amp; Activity Logs</h3>
+                <p class="text-muted small mb-0">Edit or cancel requests, with every change recorded in an audit log.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-bell"></i></div>
+                <h3 class="h6 mt-3">Search &amp; Notifications</h3>
+                <p class="text-muted small mb-0">Search by category, location, date, or status and receive updates.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-bar-chart"></i></div>
+                <h3 class="h6 mt-3">Reports &amp; Analytics</h3>
+                <p class="text-muted small mb-0">Monthly summaries, common issues, and performance by building.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body">
+                <div class="feature-icon"><i class="bi bi-people"></i></div>
+                <h3 class="h6 mt-3">Role-Based Accounts</h3>
+                <p class="text-muted small mb-0">Separate access for students, staff, maintenance, and administrators.</p>
+            </div>
+        </div>
+    </div>
+</div>

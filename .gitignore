@@ -1,0 +1,34 @@
+## .NET / Visual Studio
+bin/
+obj/
+out/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Rr]elease/
+project.lock.json
+artifacts/
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## macOS / Windows cruft
+.DS_Store
+Thumbs.db
+
+## User-uploaded files (keep the folder, ignore contents)
+SmartFacilityMaintenance/wwwroot/uploads/*
+!SmartFacilityMaintenance/wwwroot/uploads/.gitkeep
+
+## Local secrets
+appsettings.*.Local.json
+*.env
+
+## Local planning / submission documents (kept locally, not in the code repo)
+*.xlsx
+*.docx
+TASK_DISTRIBUTION.md

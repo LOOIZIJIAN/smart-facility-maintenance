@@ -1,0 +1,81 @@
+:root {
+    --brand: #0d6efd;
+    --brand-navy: #16233f;
+}
+
+body {
+    background-color: #f5f7fb;
+    color: #212529;
+}
+
+/* ---------- Navbar ---------- */
+.app-navbar {
+    background: linear-gradient(90deg, var(--brand-navy), #24406e);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+}
+.app-navbar .navbar-brand { color: #fff; }
+.app-navbar .nav-link { color: rgba(255, 255, 255, .82); }
+.app-navbar .nav-link:hover,
+.app-navbar .nav-link:focus { color: #fff; }
+
+/* ---------- Footer ---------- */
+.app-footer {
+    background: var(--brand-navy);
+    color: rgba(255, 255, 255, .75);
+}
+
+/* ---------- Hero (landing) ---------- */
+.hero {
+    background: linear-gradient(120deg, #e9f0fb, #f3f6fc);
+    border: 1px solid #e2e8f4;
+}
+
+/* ---------- Cards ---------- */
+.card { border-radius: .6rem; }
+
+.feature-card {
+    border: 1px solid #e6eaf2;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(20, 35, 63, .08);
+}
+.feature-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f0fe;
+    color: var(--brand);
+    font-size: 1.4rem;
+}
+
+/* ---------- Dashboard stat cards ---------- */
+.stat-card {
+    border: none;
+    box-shadow: 0 .25rem .75rem rgba(20, 35, 63, .06);
+}
+.border-start-primary { border-left: 4px solid #0d6efd !important; }
+.border-start-warning { border-left: 4px solid #ffc107 !important; }
+.border-start-success { border-left: 4px solid #198754 !important; }
+.border-start-danger  { border-left: 4px solid #dc3545 !important; }
+
+/* ---------- Dashboard quick links ---------- */
+.quick-link {
+    border: 1px solid #e6eaf2;
+    color: #212529;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.quick-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(20, 35, 63, .08);
+}
+
+/* ---------- Module banner ---------- */
+.module-banner {
+    border-left: 4px solid var(--brand);
+    padding-left: 1rem;
+}
