@@ -115,16 +115,38 @@ else
 
             @if (Model.Attachments.Any())
             {
+                var imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var images = Model.Attachments.Where(a => imageExtensions.Contains(System.IO.Path.GetExtension(a.StoredFileName).ToLower())).ToList();
+                var otherFiles = Model.Attachments.Except(images).ToList();
+
                 <div class="mb-3">
                     <div class="text-muted small text-uppercase mb-2">Attachments</div>
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach (var a in Model.Attachments)
-                        {
-                            <a href="~/uploads/@a.StoredFileName" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-paperclip me-1"></i>@a.FileName
-                            </a>
-                        }
-                    </div>
+
+                    @if (images.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            @foreach (var img in images)
+                            {
+                                <img src="~/uploads/@img.StoredFileName" alt="@img.FileName"
+                                     class="rounded border"
+                                     style="width:96px;height:96px;object-fit:cover;cursor:pointer;"
+                                     onclick="showAttachmentImage('@Url.Content("~/uploads/" + img.StoredFileName)', '@img.FileName')"
+                                     onerror="handleAttachmentImageError(this)" />
+                            }
+                        </div>
+                    }
+
+                    @if (otherFiles.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var a in otherFiles)
+                            {
+                                <a href="~/uploads/@a.StoredFileName" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-paperclip me-1"></i>@a.FileName
+                                </a>
+                            }
+                        </div>
+                    }
                 </div>
             }
 
@@ -155,4 +177,44 @@ else
             </div>
         </div>
     </div>
+}
+
+<div class="modal fade" id="attachmentImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="attachmentImageModalLabel">Attachment</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="attachmentImageModalImg" src="" alt="" class="img-fluid rounded" />
+            </div>
+            <div class="modal-footer">
+                <a id="attachmentImageModalDownload" href="" target="_blank" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-download me-1"></i> Open Original
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showAttachmentImage(src, name) {
+            document.getElementById('attachmentImageModalImg').src = src;
+            document.getElementById('attachmentImageModalLabel').textContent = name;
+            document.getElementById('attachmentImageModalDownload').href = src;
+            new bootstrap.Modal(document.getElementById('attachmentImageModal')).show();
+        }
+
+        function handleAttachmentImageError(imgEl) {
+            var placeholder = document.createElement('div');
+            placeholder.className = 'rounded border bg-light text-muted small text-center d-flex align-items-center justify-content-center';
+            placeholder.style.width = '96px';
+            placeholder.style.height = '96px';
+            placeholder.title = 'This file is missing on the server.';
+            placeholder.innerHTML = '<i class="bi bi-image-fill fs-4"></i>';
+            imgEl.replaceWith(placeholder);
+        }
+    </script>
 }
