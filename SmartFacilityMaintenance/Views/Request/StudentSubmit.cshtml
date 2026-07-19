@@ -1,0 +1,90 @@
+@model SmartFacilityMaintenance.Models.ViewModels.MaintenanceRequestCreateViewModel
+@{
+    ViewData["Title"] = "Submit Maintenance Request";
+    var categories = (List<SmartFacilityMaintenance.Models.Category>)ViewBag.Categories;
+    var buildings = (List<SmartFacilityMaintenance.Models.Building>)ViewBag.Buildings;
+}
+
+<div class="module-banner mb-4">
+    <h1 class="h3 mb-1">Submit a Maintenance Request</h1>
+    <p class="text-muted mb-0">Report damaged furniture, faulty projectors, lighting, air-conditioning or internet issues.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-controller="Request" asp-action="Submit" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. Faulty projector in C-305" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"
+                                  placeholder="Describe the issue in detail..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" class="form-select">
+                                <option value="">Select category...</option>
+                                @foreach (var c in categories)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="BuildingId" class="form-label"></label>
+                            <select asp-for="BuildingId" class="form-select">
+                                <option value="">Select building...</option>
+                                @foreach (var b in buildings)
+                                {
+                                    <option value="@b.Id">@b.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="BuildingId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="RoomLocation" class="form-label"></label>
+                            <input asp-for="RoomLocation" class="form-control" placeholder="e.g. Room C-305" />
+                            <span asp-validation-for="RoomLocation" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Priority" class="form-label"></label>
+                        <select asp-for="Priority" class="form-select">
+                            <option value="@RequestPriority.Low">Low</option>
+                            <option value="@RequestPriority.Medium" selected>Medium</option>
+                            <option value="@RequestPriority.High">High</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Attachments" class="form-label"></label>
+                        <input type="file" name="Attachments" class="form-control" multiple
+                               accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx" />
+                        <div class="form-text">You can attach photos or documents (JPG, PNG, GIF, PDF, DOC — max 5&nbsp;MB each).</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-send me-1"></i> Submit Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
