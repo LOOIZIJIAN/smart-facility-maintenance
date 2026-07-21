@@ -4,76 +4,66 @@
     ViewData["Title"] = "Request Modification";
 }
 
-<h2>Request Modification & Activity Logs</h2>
+<div class="module-banner mb-4">
+    <h1 class="h3 mb-1">Request Modification &amp; Activity Logs</h1>
+    <p class="text-muted mb-0">Review requests, edit details before processing begins, cancel when needed, and view each request's activity log.</p>
+</div>
 
-<p class="text-muted">
-    This module allows users to review maintenance requests, edit request details before processing,
-    cancel requests when needed, and view the activity log for each request.
-</p>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Request ID</th>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Building</th>
-            <th>Room / Location</th>
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Updated At</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>@request.Id</td>
-                    <td>@request.Title</td>
-                    <td>@request.Category?.Name</td>
-                    <td>@request.Building?.Name</td>
-                    <td>@request.RoomLocation</td>
-                    <td>@request.Priority</td>
-                    <td>@request.Status</td>
-                    <td>@request.UpdatedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-sm btn-info">Details</a>
-
-                        @if (request.Status == SmartFacilityMaintenance.Models.RequestStatus.Submitted)
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Building</th>
+                        <th>Room / Location</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var request in Model)
                         {
-                            <a asp-action="Edit" asp-route-id="@request.Id" class="btn btn-sm btn-primary">Edit</a>
-                        }
+                            <tr>
+                                <td>@request.Id</td>
+                                <td>@request.Title</td>
+                                <td>@request.Category?.Name</td>
+                                <td>@request.Building?.Name</td>
+                                <td>@request.RoomLocation</td>
+                                <td>@request.Priority</td>
+                                <td><span class="badge @request.Status.ToBadgeClass()">@request.Status.ToDisplayName()</span></td>
+                                <td class="text-nowrap">@request.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-sm btn-outline-secondary">Details</a>
 
-                        @if (request.Status != SmartFacilityMaintenance.Models.RequestStatus.Completed &&
-                             request.Status != SmartFacilityMaintenance.Models.RequestStatus.Cancelled)
-                        {
-                            <a asp-action="Cancel" asp-route-id="@request.Id" class="btn btn-sm btn-danger">Cancel</a>
-                        }
+                                    @if (request.Status == RequestStatus.Submitted)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@request.Id" class="btn btn-sm btn-primary">Edit</a>
+                                    }
 
-                        <a asp-action="ActivityLog" asp-route-id="@request.Id" class="btn btn-sm btn-secondary">Logs</a>
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="9" class="text-center">No maintenance requests found.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                    @if (request.Status != RequestStatus.Completed && request.Status != RequestStatus.Cancelled)
+                                    {
+                                        <a asp-action="Cancel" asp-route-id="@request.Id" class="btn btn-sm btn-danger">Cancel</a>
+                                    }
+
+                                    <a asp-action="ActivityLog" asp-route-id="@request.Id" class="btn btn-sm btn-outline-secondary">Logs</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="9" class="text-center text-muted py-4">No maintenance requests found.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

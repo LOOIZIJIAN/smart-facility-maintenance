@@ -20,15 +20,36 @@ public class ModificationController : Controller
         _userManager = userManager;
     }
 
+    private bool IsStaffSide => User.IsInRole(Roles.Staff) || User.IsInRole(Roles.Admin);
+
+    // Staff and administrators may modify any request; everyone else only their own.
+    private bool CanManage(MaintenanceRequest request) =>
+        IsStaffSide || request.ReportedById == _userManager.GetUserId(User);
+
+    // Maintenance personnel may also view requests they are working on.
+    private bool CanView(MaintenanceRequest request) =>
+        CanManage(request) || User.IsInRole(Roles.Maintenance);
+
     // GET: /Modification
     // Displays maintenance requests that can be reviewed for modification/cancellation.
     public async Task<IActionResult> Index()
     {
-        var requests = await _db.MaintenanceRequests
+        var userId = _userManager.GetUserId(User);
+
+        var query = _db.MaintenanceRequests
             .Include(r => r.Category)
             .Include(r => r.Building)
             .Include(r => r.ReportedBy)
             .Include(r => r.AssignedTo)
+            .AsQueryable();
+
+        // Students only see the requests they reported themselves.
+        if (!IsStaffSide && !User.IsInRole(Roles.Maintenance))
+        {
+            query = query.Where(r => r.ReportedById == userId);
+        }
+
+        var requests = await query
             .OrderByDescending(r => r.UpdatedAt)
             .ToListAsync();
 
@@ -53,6 +74,11 @@ public class ModificationController : Controller
             return NotFound();
         }
 
+        if (!CanView(request))
+        {
+            return Forbid();
+        }
+
         return View(request);
     }
 
@@ -68,6 +94,11 @@ public class ModificationController : Controller
         if (request == null)
         {
             return NotFound();
+        }
+
+        if (!CanManage(request))
+        {
+            return Forbid();
         }
 
         if (request.Status != RequestStatus.Submitted)
@@ -89,6 +120,11 @@ public class ModificationController : Controller
         if (request == null)
         {
             return NotFound();
+        }
+
+        if (!CanManage(request))
+        {
+            return Forbid();
         }
 
         if (request.Status != RequestStatus.Submitted)
@@ -142,6 +178,11 @@ public class ModificationController : Controller
             return NotFound();
         }
 
+        if (!CanManage(request))
+        {
+            return Forbid();
+        }
+
         if (request.Status == RequestStatus.Completed || request.Status == RequestStatus.Cancelled)
         {
             TempData["Error"] = "This request cannot be cancelled because it is already completed or cancelled.";
@@ -161,6 +202,11 @@ public class ModificationController : Controller
         if (request == null)
         {
             return NotFound();
+        }
+
+        if (!CanManage(request))
+        {
+            return Forbid();
         }
 
         if (request.Status == RequestStatus.Completed || request.Status == RequestStatus.Cancelled)
@@ -207,6 +253,11 @@ public class ModificationController : Controller
         if (request == null)
         {
             return NotFound();
+        }
+
+        if (!CanView(request))
+        {
+            return Forbid();
         }
 
         return View(request);
