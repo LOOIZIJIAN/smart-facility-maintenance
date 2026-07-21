@@ -45,7 +45,7 @@ public class TrackingController : Controller
             .AsQueryable();
 
         // Students may only view their own submitted requests.
-        if (User.IsInRole("Student"))
+        if (User.IsInRole(Roles.Student))
         {
             query = query.Where(r => r.ReportedById == currentUser.Id);
         }
@@ -59,7 +59,7 @@ public class TrackingController : Controller
                 r.Title.Contains(keyword) ||
                 r.Description.Contains(keyword) ||
                 r.RoomLocation.Contains(keyword) ||
-                r.Building.Name.Contains(keyword));
+                r.Building!.Name.Contains(keyword));
         }
 
         // Filter by category.
@@ -146,7 +146,7 @@ public class TrackingController : Controller
         }
 
         // Students can only open their own requests.
-        if (User.IsInRole("Student") &&
+        if (User.IsInRole(Roles.Student) &&
             request.ReportedById != currentUser.Id)
         {
             return Forbid();
