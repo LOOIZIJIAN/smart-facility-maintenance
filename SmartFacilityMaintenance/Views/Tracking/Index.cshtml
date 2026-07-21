@@ -1,6 +1,259 @@
+@model IEnumerable<SmartFacilityMaintenance.Models.MaintenanceRequest>
+
 @{
     ViewData["Title"] = "Request Tracking & History";
 }
 
-<h1 class="h3 mb-3">Request Tracking &amp; History</h1>
-<p class="text-muted">Track the status and history of maintenance requests.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Request Tracking &amp; History</h1>
+        <p class="text-muted mb-0">
+            Track the latest status of your maintenance requests.
+        </p>
+    </div>
+
+    <a asp-controller="Request"
+       asp-action="Index"
+       class="btn btn-primary">
+        Submit New Request
+    </a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" asp-controller="Tracking" asp-action="Index">
+            <div class="row g-3">
+
+                <div class="col-lg-4 col-md-6">
+                    <label class="form-label">Search</label>
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Search title, location or description..." />
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label">Category</label>
+                    <select name="categoryId" class="form-select">
+                        <option value="">All categories</option>
+
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            if (ViewBag.CategoryId != null &&
+                                (int)ViewBag.CategoryId == category.Id)
+                            {
+                                <option value="@category.Id" selected>
+                                    @category.Name
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@category.Id">
+                                    @category.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label">Building</label>
+                    <select name="buildingId" class="form-select">
+                        <option value="">All buildings</option>
+
+                        @foreach (var building in ViewBag.Buildings)
+                        {
+                            if (ViewBag.BuildingId != null &&
+                                (int)ViewBag.BuildingId == building.Id)
+                            {
+                                <option value="@building.Id" selected>
+                                    @building.Name
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@building.Id">
+                                    @building.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All statuses</option>
+
+                        @foreach (var item in Enum.GetValues<
+                            SmartFacilityMaintenance.Models.RequestStatus>())
+                        {
+                            if (ViewBag.Status != null &&
+                                (SmartFacilityMaintenance.Models.RequestStatus)
+                                ViewBag.Status == item)
+                            {
+                                <option value="@item" selected>
+                                    @item.ToString().Replace("InProgress", "In Progress")
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@item">
+                                    @item.ToString().Replace("InProgress", "In Progress")
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label">From date</label>
+                    <input type="date"
+                           name="dateFrom"
+                           value="@ViewBag.DateFrom"
+                           class="form-control" />
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label">To date</label>
+                    <input type="date"
+                           name="dateTo"
+                           value="@ViewBag.DateTo"
+                           class="form-control" />
+                </div>
+
+                <div class="col-lg-4 col-md-6 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Search / Filter
+                    </button>
+
+                    <a asp-controller="Tracking"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No maintenance requests were found.
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Request</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">
+                                        <a asp-controller="Tracking"
+                                           asp-action="Details"
+                                           asp-route-id="@request.Id"
+                                           class="text-decoration-none">
+                                            @request.Title
+                                        </a>
+                                    </div>
+
+                                    <small class="text-muted">
+                                        Request #@request.Id
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @(request.Category?.Name ?? "Not available")
+                                </td>
+
+                                <td>
+                                    <div>
+                                        @(request.Building?.Name ?? "Not available")
+                                    </div>
+
+                                    <small class="text-muted">
+                                        @request.RoomLocation
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @switch (request.Priority)
+                                    {
+                                        case SmartFacilityMaintenance.Models.RequestPriority.High:
+                                            <span class="badge bg-danger">High</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestPriority.Medium:
+                                            <span class="badge bg-warning text-dark">Medium</span>
+                                            break;
+
+                                        default:
+                                            <span class="badge bg-secondary">Low</span>
+                                            break;
+                                    }
+                                </td>
+
+                                <td>
+                                    @switch (request.Status)
+                                    {
+                                        case SmartFacilityMaintenance.Models.RequestStatus.Submitted:
+                                            <span class="badge bg-secondary">Submitted</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestStatus.Assigned:
+                                            <span class="badge bg-primary">Assigned</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestStatus.InProgress:
+                                            <span class="badge bg-info text-dark">In Progress</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestStatus.OnHold:
+                                            <span class="badge bg-warning text-dark">On Hold</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestStatus.Completed:
+                                            <span class="badge bg-success">Completed</span>
+                                            break;
+
+                                        case SmartFacilityMaintenance.Models.RequestStatus.Cancelled:
+                                            <span class="badge bg-dark">Cancelled</span>
+                                            break;
+                                    }
+                                </td>
+
+                                <td>
+                                    @request.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                    <br />
+                                    <small class="text-muted">
+                                        @request.UpdatedAt.ToLocalTime().ToString("hh:mm tt")
+                                    </small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
