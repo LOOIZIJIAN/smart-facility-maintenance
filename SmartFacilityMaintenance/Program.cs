@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartFacilityMaintenance.Data;
 using SmartFacilityMaintenance.Models;
 using SmartFacilityMaintenance.Services;
+using SmartFacilityMaintenance.Services.Reports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-// Module services are registered here (one line each).
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddControllersWithViews();
 

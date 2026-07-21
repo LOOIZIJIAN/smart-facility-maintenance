@@ -32,3 +32,6 @@ appsettings.*.Local.json
 *.xlsx
 *.docx
 TASK_DISTRIBUTION.md
+
+## Visual Studio per-user project settings
+*.csproj.user

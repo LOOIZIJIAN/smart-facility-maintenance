@@ -1,6 +1,337 @@
+@model SmartFacilityMaintenance.ViewModels.ReportViewModel
+
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Reports & Analytics";
+
+    var chartOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 }
 
-<h1 class="h3 mb-3">Reports &amp; Analytics</h1>
-<p class="text-muted">Maintenance summaries and performance statistics.</p>
+<div class="container-fluid py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Reports &amp; Analytics</h1>
+            <p class="text-muted mb-0">
+                Maintenance request summaries and performance statistics.
+            </p>
+        </div>
+
+        <div class="text-muted small mt-2 mt-md-0">
+            Generated: @DateTime.Now.ToString("dd MMM yyyy, hh:mm tt")
+        </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <div class="text-muted small">Total Requests</div>
+                    <div class="display-6 fw-semibold">
+                        @Model.TotalRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <div class="text-muted small">Submitted</div>
+                    <div class="display-6 fw-semibold">
+                        @Model.SubmittedRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <div class="text-muted small">In Progress</div>
+                    <div class="display-6 fw-semibold">
+                        @Model.InProgressRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <div class="text-muted small">Completed</div>
+                    <div class="display-6 fw-semibold">
+                        @Model.CompletedRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Assigned</div>
+                    <div class="h2 mb-0">
+                        @Model.AssignedRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">On Hold</div>
+                    <div class="h2 mb-0">
+                        @Model.OnHoldRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Cancelled</div>
+                    <div class="h2 mb-0">
+                        @Model.CancelledRequests
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        Average Completion Time
+                    </div>
+
+                    <div class="h2 mb-0">
+                        @Model.AverageCompletionHours
+                        <span class="fs-6 fw-normal">hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First chart row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <strong>Requests by Status</strong>
+                </div>
+
+                <div class="card-body">
+                    <div style="height: 330px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <strong>Monthly Request Summary</strong>
+                </div>
+
+                <div class="card-body">
+                    <div style="height: 330px;">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second chart row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <strong>Requests by Building</strong>
+                </div>
+
+                <div class="card-body">
+                    <div style="height: 350px;">
+                        <canvas id="buildingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <strong>Requests by Department</strong>
+                </div>
+
+                <div class="card-body">
+                    <div style="height: 350px;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top categories -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <strong>Top Five Reported Issue Categories</strong>
+        </div>
+
+        <div class="card-body">
+            <div style="height: 350px;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script id="reportData" type="application/json">
+        @Html.Raw(JsonSerializer.Serialize(new
+        {
+                statusLabels = Model.StatusLabels,
+                statusCounts = Model.StatusCounts,
+                monthlyLabels = Model.MonthlyLabels,
+                monthlyCounts = Model.MonthlyCounts,
+                buildingLabels = Model.BuildingLabels,
+                buildingCounts = Model.BuildingCounts,
+                departmentLabels = Model.DepartmentLabels,
+                departmentCounts = Model.DepartmentCounts,
+                categoryLabels = Model.CategoryLabels,
+                categoryCounts = Model.CategoryCounts
+        }, chartOptions))
+    </script>
+
+    <script>
+        const reportDataElement = document.getElementById("reportData");
+        const reportData = JSON.parse(reportDataElement.textContent);
+
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false
+        };
+
+        new Chart(
+            document.getElementById("statusChart"),
+            {
+                type: "doughnut",
+                data: {
+                    labels: reportData.statusLabels,
+                    datasets: [{
+                        label: "Requests",
+                        data: reportData.statusCounts
+                    }]
+                },
+                options: commonOptions
+            }
+        );
+
+        new Chart(
+            document.getElementById("monthlyChart"),
+            {
+                type: "line",
+                data: {
+                    labels: reportData.monthlyLabels,
+                    datasets: [{
+                        label: "Requests Submitted",
+                        data: reportData.monthlyCounts,
+                        tension: 0.25,
+                        fill: false
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        new Chart(
+            document.getElementById("buildingChart"),
+            {
+                type: "bar",
+                data: {
+                    labels: reportData.buildingLabels,
+                    datasets: [{
+                        label: "Number of Requests",
+                        data: reportData.buildingCounts
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        new Chart(
+            document.getElementById("departmentChart"),
+            {
+                type: "pie",
+                data: {
+                    labels: reportData.departmentLabels,
+                    datasets: [{
+                        label: "Requests",
+                        data: reportData.departmentCounts
+                    }]
+                },
+                options: commonOptions
+            }
+        );
+
+        new Chart(
+            document.getElementById("categoryChart"),
+            {
+                type: "bar",
+                data: {
+                    labels: reportData.categoryLabels,
+                    datasets: [{
+                        label: "Number of Reports",
+                        data: reportData.categoryCounts
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    indexAxis: "y",
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    </script>
+}

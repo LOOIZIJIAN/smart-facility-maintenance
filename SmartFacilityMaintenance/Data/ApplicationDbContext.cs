@@ -17,6 +17,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Enquiry> Enquiries => Set<Enquiry>();
     public DbSet<Building> Buildings => Set<Building>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -69,5 +70,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Property(r => r.Priority)
             .HasConversion<string>()
             .HasMaxLength(20);
+
+        builder.Entity<Notification>()
+            .Property(n => n.Title)
+            .HasMaxLength(100);
+
+        builder.Entity<Notification>()
+            .Property(n => n.Message)
+            .HasMaxLength(500);
+
+        builder.Entity<Notification>()
+            .Property(n => n.CreatedDate)
+            .HasDefaultValueSql("GETDATE()");
     }
 }

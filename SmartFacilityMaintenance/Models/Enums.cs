@@ -7,6 +7,7 @@ public enum RequestStatus
     InProgress,
     OnHold,
     Completed,
+    Closed,
     Cancelled
 }
 
