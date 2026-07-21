@@ -4,53 +4,66 @@
     ViewData["Title"] = "Activity Log";
 }
 
-<h2>Activity Log</h2>
+<div class="module-banner mb-4">
+    <h1 class="h3 mb-1">Activity Log</h1>
+    <p class="text-muted mb-0">Every change made to this request, with who made it and when.</p>
+</div>
 
-<div class="card mb-3">
-    <div class="card-header">
-        <strong>Request:</strong> @Model.Title
-    </div>
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-start">
+            <div>
+                <h2 class="h5 mb-1">#@Model.Id — @Model.Title</h2>
+                <span class="badge @Model.Status.ToBadgeClass()">@Model.Status.ToDisplayName()</span>
+            </div>
+            <div class="text-muted small text-end">
+                Room / Location: @Model.RoomLocation
+            </div>
+        </div>
 
-    <div class="card-body">
-        <p><strong>Request ID:</strong> @Model.Id</p>
-        <p><strong>Status:</strong> @Model.Status</p>
-        <p><strong>Room / Location:</strong> @Model.RoomLocation</p>
+        <hr />
+
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Details</a>
     </div>
 </div>
 
-<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary mb-3">Back to Details</a>
-
 @if (Model.ActivityLogs != null && Model.ActivityLogs.Any())
 {
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Date / Time</th>
-                <th>Action</th>
-                <th>Old Status</th>
-                <th>New Status</th>
-                <th>Performed By</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var log in Model.ActivityLogs.OrderByDescending(l => l.Timestamp))
-            {
-                <tr>
-                    <td>@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
-                    <td>@log.Action</td>
-                    <td>@log.OldStatus</td>
-                    <td>@log.NewStatus</td>
-                    <td>@log.PerformedBy?.FullName</td>
-                    <td>@log.Notes</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Action</th>
+                            <th>Old Status</th>
+                            <th>New Status</th>
+                            <th>Performed By</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model.ActivityLogs.OrderByDescending(l => l.Timestamp))
+                        {
+                            <tr>
+                                <td class="text-nowrap">@log.Timestamp.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</td>
+                                <td>@log.Action</td>
+                                <td>@(log.OldStatus.HasValue ? log.OldStatus.Value.ToDisplayName() : "—")</td>
+                                <td>@(log.NewStatus.HasValue ? log.NewStatus.Value.ToDisplayName() : "—")</td>
+                                <td>@(log.PerformedBy?.FullName ?? "—")</td>
+                                <td class="small text-muted">@log.Notes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-    <div class="alert alert-info">
-        No activity logs found for this request.
+    <div class="card shadow-sm">
+        <div class="card-body text-center text-muted py-4">No activity logs found for this request.</div>
     </div>
 }
