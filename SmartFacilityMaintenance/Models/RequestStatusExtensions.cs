@@ -9,6 +9,7 @@ public static class RequestStatusExtensions
         RequestStatus.InProgress => "In Progress",
         RequestStatus.OnHold => "On Hold",
         RequestStatus.Completed => "Completed",
+        RequestStatus.Closed => "Closed",
         RequestStatus.Cancelled => "Cancelled",
         _ => status.ToString()
     };
@@ -20,6 +21,7 @@ public static class RequestStatusExtensions
         RequestStatus.InProgress => "bg-warning text-dark",
         RequestStatus.OnHold => "bg-secondary",
         RequestStatus.Completed => "bg-success",
+        RequestStatus.Closed => "bg-primary",
         RequestStatus.Cancelled => "bg-dark",
         _ => "bg-secondary"
     };
