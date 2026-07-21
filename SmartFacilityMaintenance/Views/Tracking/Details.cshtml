@@ -1,0 +1,247 @@
+﻿@model SmartFacilityMaintenance.Models.MaintenanceRequest
+
+@{
+    ViewData["Title"] = "Request Details & History";
+
+    var progressPercentage = Model.Status switch
+    {
+        SmartFacilityMaintenance.Models.RequestStatus.Submitted => 25,
+        SmartFacilityMaintenance.Models.RequestStatus.Assigned => 50,
+        SmartFacilityMaintenance.Models.RequestStatus.InProgress => 75,
+        SmartFacilityMaintenance.Models.RequestStatus.Completed => 100,
+        SmartFacilityMaintenance.Models.RequestStatus.Cancelled => 100,
+        _ => 25
+    };
+
+    var progressColour = Model.Status switch
+    {
+        SmartFacilityMaintenance.Models.RequestStatus.Completed => "bg-success",
+        SmartFacilityMaintenance.Models.RequestStatus.Cancelled => "bg-dark",
+        SmartFacilityMaintenance.Models.RequestStatus.InProgress => "bg-info",
+        SmartFacilityMaintenance.Models.RequestStatus.Assigned => "bg-primary",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <a asp-controller="Tracking"
+           asp-action="Index"
+           class="text-decoration-none">
+            &larr; Back to tracking
+        </a>
+
+        <h1 class="h3 mt-3 mb-1">@Model.Title</h1>
+
+        <p class="text-muted mb-0">
+            Request #@Model.Id
+        </p>
+    </div>
+
+    <span class="badge fs-6
+        @(Model.Status == SmartFacilityMaintenance.Models.RequestStatus.Completed
+            ? "bg-success"
+            : Model.Status == SmartFacilityMaintenance.Models.RequestStatus.InProgress
+                ? "bg-info text-dark"
+                : Model.Status == SmartFacilityMaintenance.Models.RequestStatus.Assigned
+                    ? "bg-primary"
+                    : Model.Status == SmartFacilityMaintenance.Models.RequestStatus.Cancelled
+                        ? "bg-dark"
+                        : "bg-secondary")">
+        @Model.Status.ToString().Replace("InProgress", "In Progress")
+    </span>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Request Progress</h2>
+
+        <div class="progress mb-2"
+             role="progressbar"
+             aria-label="Request progress"
+             aria-valuenow="@progressPercentage"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             style="height: 18px;">
+            <div class="progress-bar @progressColour"
+                 style="width: @(progressPercentage)%">
+                @progressPercentage%
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between small text-muted">
+            <span>Submitted</span>
+            <span>Assigned</span>
+            <span>In Progress</span>
+            <span>Completed</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Request Information</h2>
+            </div>
+
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
+
+                    <dt class="col-sm-4">Category</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Category?.Name ?? "Not available")
+                    </dd>
+
+                    <dt class="col-sm-4">Building</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Building?.Name ?? "Not available")
+                    </dd>
+
+                    <dt class="col-sm-4">Room / Location</dt>
+                    <dd class="col-sm-8">@Model.RoomLocation</dd>
+
+                    <dt class="col-sm-4">Priority</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge
+                            @(Model.Priority == SmartFacilityMaintenance.Models.RequestPriority.High
+                                ? "bg-danger"
+                                : Model.Priority == SmartFacilityMaintenance.Models.RequestPriority.Medium
+                                    ? "bg-warning text-dark"
+                                    : "bg-secondary")">
+                            @Model.Priority
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4">Reported By</dt>
+                    <dd class="col-sm-8">
+                        @(Model.ReportedBy?.FullName ?? "Unknown user")
+                    </dd>
+
+                    <dt class="col-sm-4">Assigned To</dt>
+                    <dd class="col-sm-8">
+                        @(Model.AssignedTo?.FullName ?? "Not assigned yet")
+                    </dd>
+
+                    <dt class="col-sm-4">Submitted On</dt>
+                    <dd class="col-sm-8">
+                        @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                    </dd>
+
+                    <dt class="col-sm-4">Last Updated</dt>
+                    <dd class="col-sm-8">
+                        @Model.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Attachments</h2>
+            </div>
+
+            <div class="card-body">
+                @if (Model.Attachments == null || !Model.Attachments.Any())
+                {
+                    <p class="text-muted mb-0">
+                        No supporting files were uploaded.
+                    </p>
+                }
+                else
+                {
+                    <div class="list-group">
+                        @foreach (var attachment in Model.Attachments)
+                        {
+                            <div class="list-group-item">
+                                Supporting attachment #@attachment.Id
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Activity History</h2>
+            </div>
+
+            <div class="card-body">
+                @if (Model.ActivityLogs == null || !Model.ActivityLogs.Any())
+                {
+                    <div class="alert alert-info mb-0">
+                        No activity history is available yet.
+                    </div>
+                }
+                else
+                {
+                    <div class="position-relative">
+                        @foreach (var log in Model.ActivityLogs)
+                        {
+                            <div class="border-start border-2 border-primary ps-4 pb-4 position-relative">
+                                <span class="position-absolute top-0 start-0 translate-middle
+                                    rounded-circle bg-primary"
+                                      style="width: 14px; height: 14px;">
+                                </span>
+
+                                <div class="fw-semibold">
+                                    @(log.Action switch
+                                    {
+                                        "StatusChanged" => "Status Changed",
+                                        "Created" => "Request Created",
+                                        "Assigned" => "Request Assigned",
+                                        "Updated" => "Request Updated",
+                                        "Cancelled" => "Request Cancelled",
+                                        _ => log.Action
+                                    })
+                                </div>
+
+                                @if (log.OldStatus.HasValue || log.NewStatus.HasValue)
+                                {
+                                    <div class="small mt-1">
+                                        @if (log.OldStatus.HasValue)
+                                        {
+                                            <span class="badge bg-light text-dark border">
+                                                @(log.OldStatus.Value.ToString().Replace("InProgress", "In Progress"))
+                                            </span>
+                                        }
+
+                                        @if (log.OldStatus.HasValue && log.NewStatus.HasValue)
+                                        {
+                                            <span class="mx-1">&rarr;</span>
+                                        }
+
+                                        @if (log.NewStatus.HasValue)
+                                        {
+                                            <span class="badge bg-primary">
+                                                @(log.NewStatus.Value.ToString().Replace("InProgress", "In Progress"))
+                                            </span>
+                                        }
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(log.Notes))
+                                {
+                                    <p class="mb-1 mt-2">
+                                        @log.Notes
+                                    </p>
+                                }
+
+                                <div class="small text-muted mt-2">
+                                    @(log.PerformedBy?.FullName ?? "System")
+                                    <br />
+                                    @(log.Timestamp.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt"))
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
