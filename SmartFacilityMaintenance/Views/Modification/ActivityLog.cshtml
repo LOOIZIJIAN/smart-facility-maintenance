@@ -1,0 +1,56 @@
+@model SmartFacilityMaintenance.Models.MaintenanceRequest
+
+@{
+    ViewData["Title"] = "Activity Log";
+}
+
+<h2>Activity Log</h2>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Request:</strong> @Model.Title
+    </div>
+
+    <div class="card-body">
+        <p><strong>Request ID:</strong> @Model.Id</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>Room / Location:</strong> @Model.RoomLocation</p>
+    </div>
+</div>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary mb-3">Back to Details</a>
+
+@if (Model.ActivityLogs != null && Model.ActivityLogs.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Date / Time</th>
+                <th>Action</th>
+                <th>Old Status</th>
+                <th>New Status</th>
+                <th>Performed By</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.ActivityLogs.OrderByDescending(l => l.Timestamp))
+            {
+                <tr>
+                    <td>@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
+                    <td>@log.Action</td>
+                    <td>@log.OldStatus</td>
+                    <td>@log.NewStatus</td>
+                    <td>@log.PerformedBy?.FullName</td>
+                    <td>@log.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        No activity logs found for this request.
+    </div>
+}
